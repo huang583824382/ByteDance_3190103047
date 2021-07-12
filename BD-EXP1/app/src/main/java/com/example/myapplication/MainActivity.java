@@ -6,12 +6,15 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,15 +28,24 @@ public class MainActivity extends AppCompatActivity {
         final ImageView img1 = findViewById(R.id.imageView2);
         final ProgressBar pgb1= findViewById(R.id.programbar1);
         final SeekBar sb1=findViewById(R.id.seekbar1);
+        final TextView tv2=findViewById(R.id.textView);
 
         sb1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int len=100+progress;
-                int wid=(int) (len * 3 / 4);
-                img1.setLayoutParams(new LinearLayout.LayoutParams(len, wid));
+                if(fromUser==true){
+                    tv2.setText(""+progress);
 
+                    ViewGroup.LayoutParams lp = img1.getLayoutParams();
+                    float len=(float)(progress*3);
+                    float wid=(float)(progress*3);
+                    Log.d( "image size", ""+len+" , "+wid+" , "+progress);
+                    lp.width = (int) wid;
+                    lp.height = (int) len;
+                    Log.d("lp: ", ""+lp.width+" , "+lp.height);
+                    img1.setLayoutParams(lp);
+                }
             }
 
             @Override
