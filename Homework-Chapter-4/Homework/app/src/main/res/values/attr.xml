@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Clock">
+        <attr name="unit_color" format="color"></attr>
+        <attr name="needle_color" format="color"></attr>
+    </declare-styleable>
+</resources>

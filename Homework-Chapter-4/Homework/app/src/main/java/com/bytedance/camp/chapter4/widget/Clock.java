@@ -1,6 +1,7 @@
 package com.bytedance.camp.chapter4.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +14,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.bytedance.camp.chapter4.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,21 +62,24 @@ public class Clock extends View {
 
 
     public Clock(Context context) {
-        super(context);
+        this(context, null);
         init();
     }
 
     public Clock(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
         init();
+        initCustomAttrs(getContext(), attrs);
     }
 
     public Clock(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+        initCustomAttrs(getContext(), attrs);
     }
 
     private void init() {
+
         unitPaint.setAntiAlias(true);
         unitPaint.setColor(Color.WHITE);
         unitPaint.setStrokeWidth(UNIT_LINE_WIDTH);
@@ -90,6 +96,20 @@ public class Clock extends View {
         numberPaint.setTextSize(50);
         numberPaint.setColor(Color.WHITE);
         numberPaint.setTextAlign(Paint.Align.CENTER);
+    }
+
+    private void initCustomAttrs(Context context, AttributeSet attrs) {
+        //获取自定义属性。
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.Clock);
+        //获取字体大小,默认大小是16dp
+        int color_unit = ta.getColor(R.styleable.Clock_unit_color, Color.WHITE);
+        //获取文字内容
+        int color_needle = ta.getColor(R.styleable.Clock_needle_color, Color.WHITE);
+        //获取文字颜色，默认颜色是BLUE
+        unitPaint.setColor(color_unit);
+        needlePaint.setColor(color_needle);
+        Log.d("color-----", "initCustomAttrs: "+color_needle+" "+color_unit);
+        ta.recycle();
     }
 
     @Override
