@@ -74,15 +74,16 @@ public class MainActivity extends AppCompatActivity {
     private MessageListResponse getresponse(String studentId){
         MessageListResponse response=null;
         try {
-            URL url = new URL(Constants.BASE_URL+"messages");
 
+            String u=Constants.BASE_URL+"messages?student_id=";
+            if(studentId!=null){
+                u=u+studentId;
+            }
+
+            URL url = new URL(u);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(6000);
             conn.setRequestMethod("GET");
-            if(studentId!=null){
-                Log.d(TAG, "getresponse: here my id#####"+studentId);
-                conn.setRequestProperty("student_id", Constants.STUDENT_ID);
-            }
             conn.setRequestProperty("token", Constants.token);
 
             if(conn.getResponseCode()==200){

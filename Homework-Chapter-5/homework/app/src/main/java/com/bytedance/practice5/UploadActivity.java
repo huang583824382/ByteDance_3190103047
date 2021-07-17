@@ -17,15 +17,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bytedance.practice5.model.UploadResponse;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okio.Utf8;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,7 +80,8 @@ public class UploadActivity extends AppCompatActivity {
         findViewById(R.id.btn_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit();
+//                submit();
+                submitMessageWithURLConnection();
             }
         });
     }
@@ -148,6 +165,8 @@ public class UploadActivity extends AppCompatActivity {
 //        Log.d(TAG, "submit: test))))))))");
         Call<UploadResponse> call = api.submitMessage(Constants.STUDENT_ID, "", username, toname1, contentedit,coverPart, Constants.token);
 
+        Log.d(TAG, "submit:-======= "+call.toString());
+
         call.enqueue(new Callback<UploadResponse>() {
             @Override
             public void onResponse(Call<UploadResponse> call, Response<UploadResponse> response) {
@@ -164,6 +183,81 @@ public class UploadActivity extends AppCompatActivity {
 
     // TODO 7 选做 用URLConnection的方式实现提交
     private void submitMessageWithURLConnection(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, String> fieldMap = new HashMap<String, String>();
+                Map<String, String> filesMap = new HashMap<String, String>();
+                fieldMap.put("student_id", Constants.STUDENT_ID);
+                fieldMap.put("from", Constants.USER_NAME);
+                fieldMap.put("to", toEditText.getText().toString());
+                fieldMap.put("content", contentEditText.getText().toString());
+                fieldMap.put("extra_value", "");
+                fieldMap.put("token", Constants.token);
+
+                String filepath=coverImageUri.getPath();
+
+                Log.d(TAG, "submitMessageWithURLConnection:++++++++ "+filepath);
+                Log.d(TAG, "submitMessageWithURLConnection: ++++++++"+coverImageUri);
+
+                if(filepath!=null) filesMap.put("image", filepath);
+
+                final String NEWLINE = "\r\n";
+                final String PREFIX = "--";
+                final String BOUNDARY = "#";
+                DataOutputStream out = null;
+                try {
+                    URL url=new URL("https://api-android-camp.bytedance.com/zju/invoke/messages/");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(30000);
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("token", Constants.token);
+                    conn.setRequestProperty("Content-Type",
+                            "multipart/form-data; boundary=" + BOUNDARY);
+//                    Log.d(TAG, "submitMessageWithURLConnection: _+_+_+"+conn.toString());
+                    conn.connect();
+                    out = new DataOutputStream(conn.getOutputStream());
+//                    Log.d(TAG, "submitMessageWithURLConnection: +_+_+_+"+out);
+                    Iterator<Map.Entry<String, String>> iter = fieldMap.entrySet().iterator();
+                    for(Map.Entry<String, String> entry : fieldMap.entrySet()){
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        out.writeBytes(PREFIX+BOUNDARY+NEWLINE);
+                        out.writeBytes("Content-Disposition: form-data; "+"name=\"" + key + "\"" + NEWLINE);
+                        out.writeBytes(NEWLINE);
+                        out.writeBytes(value);
+                        out.writeBytes(NEWLINE);
+                    }
+
+                    byte[] body_data = readDataFromUri(coverImageUri);
+
+                    if(body_data!=null&&body_data.length>0){
+                        out.writeBytes(PREFIX+BOUNDARY+NEWLINE);
+                        String filename = filepath.substring(filepath.lastIndexOf(File.separatorChar));
+                        out.writeBytes("Content-Disposition: form-data; " + "name=\""
+                                + "uploadFile" + "\"" + "; filename=\"" + "image.png"
+                                + "\"" + NEWLINE);
+                        out.writeBytes(NEWLINE);
+                        out.writeBytes(body_data.toString());
+                        out.writeBytes(NEWLINE);
+
+                    }
+                    out.writeBytes(PREFIX+BOUNDARY+PREFIX+NEWLINE);
+                    out.flush();
+                    Log.d(TAG, "run: "+conn.getResponseCode());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                finally {
+
+                }
+            }
+        }).start();
+
 
     }
 
