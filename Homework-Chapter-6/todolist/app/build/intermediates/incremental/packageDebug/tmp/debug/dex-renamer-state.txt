@@ -1,0 +1,7 @@
+#Mon Jul 19 17:02:37 CST 2021
+base.0=D\:\\ByteDance_3190103047\\Homework-Chapter-6\\todolist\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\out
+path.1=classes.dex
+renamed.1=classes2.dex
+path.0=classes.dex
+renamed.0=classes.dex
+base.1=D\:\\ByteDance_3190103047\\Homework-Chapter-6\\todolist\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\out
