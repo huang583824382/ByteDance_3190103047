@@ -157,10 +157,7 @@ public class UploadActivity extends AppCompatActivity {
         MultipartBody.Part username = MultipartBody.Part.createFormData("from", Constants.USER_NAME);
         MultipartBody.Part toname1 = MultipartBody.Part.createFormData("to", to);
         MultipartBody.Part contentedit = MultipartBody.Part.createFormData("content", content);
-        MultipartBody.Part coverPart = MultipartBody.Part.createFormData("image",
-                "cover.png",
-                RequestBody.create(MediaType.parse("multipart/form-data"),
-                        coverImageData));
+        MultipartBody.Part coverPart = MultipartBody.Part.createFormData("image", "cover.png", RequestBody.create(MediaType.parse("multipart/form-data"), coverImageData));
         
 //        Log.d(TAG, "submit: test))))))))");
         Call<UploadResponse> call = api.submitMessage(Constants.STUDENT_ID, "", username, toname1, contentedit,coverPart, Constants.token);
