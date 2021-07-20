@@ -80,8 +80,8 @@ public class UploadActivity extends AppCompatActivity {
         findViewById(R.id.btn_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                submit();
-                submitMessageWithURLConnection();
+                submit();
+//                submitMessageWithURLConnection();
             }
         });
     }
